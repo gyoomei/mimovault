@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" style="color-scheme: light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fafaf5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a08" media="(prefers-color-scheme: dark)">
+<title>MimoVault — Wallet NFT Gallery · AI Curator · Free</title>
+<meta name="description" content="Paste any wallet, see every NFT across 5 EVM chains as a museum-curated gallery walk-through. Powered by Xiaomi MiMo V2.5.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  /* Museum light — warm cream + ink black + gold accent */
+  --bg: #fafaf5; --bg-2: #f0ece0; --bg-3: #ffffff;
+  --surface: rgba(255, 255, 255, .85);
+  --surface-2: rgba(248, 245, 238, .9);
+  --line: rgba(20, 18, 12, .12);
+  --line-2: rgba(20, 18, 12, .25);
+  --text: #18150d; --text-2: #3d3a30; --muted: #7a7568; --dim: #a8a298;
+  --acc: #b88a3a;       /* warm gold accent */
+  --acc-2: #8c6420;     /* deep gold */
+  --crit: #8b1c1c;      /* deep crimson */
+  --warn: #a06820;      /* burnt amber */
+  --good: #406e3e;      /* deep forest */
+  --r: 4px; --r-lg: 8px; --r-xl: 14px;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sh-card: 0 1px 2px rgba(20, 18, 12, .06), 0 4px 12px rgba(20, 18, 12, .04);
+  --sh-hover: 0 4px 8px rgba(20, 18, 12, .08), 0 12px 32px rgba(20, 18, 12, .12);
+}
+[data-theme="dark"] {
+  --bg: #0a0a08; --bg-2: #14130f; --bg-3: #1c1b16;
+  --surface: rgba(28, 26, 22, .85);
+  --surface-2: rgba(36, 34, 28, .9);
+  --line: rgba(255, 252, 240, .1);
+  --line-2: rgba(255, 252, 240, .22);
+  --text: #f5f1e3; --text-2: #c8c2af; --muted: #8c8775; --dim: #5a5648;
+  --acc: #d4a554;
+  --sh-card: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 12px rgba(0, 0, 0, .25);
+}
+
+button, .nav-btn, .chain-pill, .example-btn, .btn-primary, .modal-btn, .modal-close, .artwork {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+section, [id] { scroll-margin-top: 80px; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; line-height: 1.55; font-size: 15px;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01';
+  overscroll-behavior-y: none;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+::selection { background: var(--acc); color: var(--bg); }
+
+.container { max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; }
+
+/* NAV */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  padding: 18px 0;
+  background: rgba(250, 250, 245, .85); backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border-bottom: 1px solid var(--line);
+}
+[data-theme="dark"] .nav { background: rgba(10, 10, 8, .85); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.brand {
+  font-family: var(--serif); font-weight: 700; font-size: 1.45rem;
+  letter-spacing: -0.02em; color: var(--text); text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--text); color: var(--bg);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-weight: 800; font-size: .9rem;
+  font-style: italic;
+}
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  padding: 8px 14px; border-radius: var(--r);
+  background: transparent; border: 1px solid var(--line);
+  color: var(--text-2); font-family: var(--sans);
+  font-size: .76rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: color .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+}
+.nav-btn:hover { color: var(--text); border-color: var(--line-2); background: var(--surface-2); }
+
+/* HERO */
+.hero { padding: clamp(60px, 9vw, 110px) 0 clamp(40px, 6vw, 70px); }
+.hero-eyebrow {
+  font-family: var(--mono); font-size: .72rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 2.5px;
+  margin-bottom: 28px; display: inline-flex; align-items: center; gap: 12px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 32px; height: 1px; background: var(--text);
+  display: inline-block;
+}
+.hero h1 {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(2.8rem, 7vw, 5.6rem); line-height: 1;
+  letter-spacing: -0.025em; max-width: 16ch;
+  margin-bottom: 32px;
+}
+.hero h1 em {
+  font-style: italic; font-weight: 500;
+  color: var(--acc-2);
+}
+.hero p.lead {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(1.05rem, 1.7vw, 1.32rem); color: var(--text-2);
+  max-width: 56ch; line-height: 1.55;
+  margin-bottom: 48px;
+}
+.hero-meta {
+  display: flex; gap: 36px; flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 28px; border-top: 1px solid var(--line);
+  font-family: var(--mono); font-size: .68rem;
+  text-transform: uppercase; letter-spacing: 1.8px; color: var(--muted);
+}
+.hero-meta b { color: var(--text); font-weight: 500; }
+
+/* INPUT — gallery card with serif label */
+.scan-section { padding: 24px 0 60px; }
+.scan-card {
+  background: var(--bg-3); border: 1px solid var(--line);
+  border-radius: var(--r-lg); padding: 32px; box-shadow: var(--sh-card);
+}
+.scan-label {
+  font-family: var(--mono); font-size: .7rem; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--muted); margin-bottom: 16px;
+}
+.chain-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.chain-pill {
+  padding: 6px 12px; border-radius: var(--r); border: 1px solid var(--line);
+  background: transparent; color: var(--text-2);
+  font-family: var(--mono); font-size: .72rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: color .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+}
+.chain-pill.on { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+.chain-pill:hover { border-color: var(--line-2); color: var(--text); }
+.chain-pill:not(.on) { color: var(--muted); }
+.input-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.input-row input {
+  flex: 1; min-width: 280px;
+  padding: 14px 18px; border-radius: var(--r);
+  background: var(--bg); border: 1px solid var(--line);
+  font-family: var(--mono); font-size: .88rem; color: var(--text);
+  outline: none;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.input-row input::placeholder { color: var(--dim); }
+.input-row input:focus-visible { border-color: var(--text); box-shadow: 0 0 0 3px rgba(20, 18, 12, .08); }
+.btn-primary {
+  padding: 16px 32px; border-radius: var(--r);
+  background: var(--text); color: var(--bg);
+  border: 1px solid var(--text); cursor: pointer;
+  font-family: var(--mono); font-weight: 500;
+  font-size: .76rem; text-transform: uppercase; letter-spacing: 1.5px;
+  transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+}
+.btn-primary:hover { background: var(--acc-2); border-color: var(--acc-2); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.examples { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+.examples b {
+  font-family: var(--mono); font-size: .68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  display: inline-flex; align-items: center;
+}
+.example-btn {
+  padding: 0; background: none; border: none;
+  font-family: var(--mono); font-size: .72rem;
+  color: var(--text-2); cursor: pointer;
+  border-bottom: 1px solid var(--line);
+  letter-spacing: 0.4px;
+  transition: color .2s var(--ease), border-color .2s var(--ease);
+}
+.example-btn:hover { color: var(--acc-2); border-bottom-color: var(--acc-2); }
+
+/* LOADING */
+.loading { padding: 80px 0; text-align: center; display: none; }
+.loading.on { display: block; }
+.loading-msg {
+  font-family: var(--serif); font-style: italic; font-size: 1.1rem;
+  color: var(--text-2); margin-top: 24px;
+}
+.loader-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text); margin: 0 4px;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+.loader-dot:nth-child(2) { animation-delay: .2s; }
+.loader-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes dotPulse { 0%, 80%, 100% { opacity: .2; transform: scale(.8); } 40% { opacity: 1; transform: scale(1); } }
+
+/* RESULT */
+.result { padding: 60px 0; display: none; }
+.result.on { display: block; }
+
+/* Exhibition header */
+.exhibition-header {
+  border-top: 1px solid var(--text); padding-top: 32px;
+  margin-bottom: 48px;
+}
+.exhibition-meta {
+  font-family: var(--mono); font-size: .68rem;
+  text-transform: uppercase; letter-spacing: 2px; color: var(--muted);
+  margin-bottom: 12px;
+}
+.exhibition-title {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05;
+  letter-spacing: -0.02em; max-width: 22ch;
+  margin-bottom: 20px;
+}
+.exhibition-stats {
+  display: flex; gap: 56px; flex-wrap: wrap; padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.stat-block { }
+.stat-block .num {
+  font-family: var(--serif); font-weight: 500;
+  font-size: 2.4rem; line-height: 1; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  display: block; margin-bottom: 6px;
+}
+.stat-block .label {
+  font-family: var(--mono); font-size: .68rem;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);
+}
+
+/* MiMo Curator note */
+.curator-note {
+  margin: 56px 0 64px; padding: 40px; position: relative;
+  background: var(--bg-2); border-left: 3px solid var(--acc);
+}
+.curator-note::before {
+  content: '"'; position: absolute; top: -8px; left: 28px;
+  font-family: var(--serif); font-size: 6rem; line-height: 1;
+  color: var(--acc); opacity: .35; font-style: italic;
+}
+.curator-tag {
+  font-family: var(--mono); font-size: .65rem;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--acc-2); margin-bottom: 12px;
+}
+.curator-text {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(1.1rem, 1.7vw, 1.3rem); line-height: 1.6;
+  color: var(--text); padding-left: 8px;
+}
+.curator-byline {
+  font-family: var(--mono); font-size: .68rem;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted); margin-top: 20px; padding-left: 8px;
+}
+
+/* GALLERY GRID — masonry-ish */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 32px 28px;
+  margin: 32px 0 48px;
+}
+.gallery-section {
+  margin: 56px 0;
+}
+.gallery-section-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 32px;
+  flex-wrap: wrap; gap: 12px;
+}
+.gallery-section-title {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem); letter-spacing: -0.01em;
+  display: flex; align-items: baseline; gap: 16px;
+}
+.gallery-roman {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: .9em; color: var(--acc-2);
+  letter-spacing: 0; min-width: 1.6em;
+}
+.gallery-section-meta {
+  font-family: var(--mono); font-size: .7rem;
+  text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted);
+}
+
+.artwork {
+  position: relative; cursor: pointer;
+  transition: transform .35s var(--ease);
+}
+.artwork-frame {
+  position: relative; overflow: hidden; background: var(--bg-2);
+  aspect-ratio: 1; border: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+.artwork img, .artwork video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  display: block; max-width: 100%; max-height: 100%;
+  transition: transform .6s var(--ease), filter .35s var(--ease);
+}
+.artwork:hover .artwork-frame img,
+.artwork:hover .artwork-frame video { transform: scale(1.04); }
+.artwork-placeholder {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: 
+    repeating-linear-gradient(45deg, var(--bg-2) 0, var(--bg-2) 12px, var(--bg-3) 12px, var(--bg-3) 13px),
+    var(--bg-2);
+  color: var(--dim);
+  font-family: var(--serif); font-style: italic; font-size: .9rem;
+  letter-spacing: 0; gap: 8px;
+}
+.artwork-placeholder::before {
+  content: '⌧'; font-family: var(--serif); font-size: 1.6rem;
+  color: var(--line-2); line-height: 1; font-style: normal;
+}
+.artwork-chain {
+  position: absolute; top: 10px; right: 10px;
+  padding: 4px 8px; background: rgba(255, 255, 255, .9);
+  border: 1px solid rgba(20, 18, 12, .12);
+  font-family: var(--mono); font-size: .62rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.6px; color: var(--text);
+  backdrop-filter: blur(8px);
+}
+.artwork-meta {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 10px;
+}
+.artwork-title {
+  font-family: var(--serif); font-weight: 500; font-size: 1.02rem;
+  line-height: 1.25; letter-spacing: -0.01em;
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.artwork-id {
+  font-family: var(--mono); font-size: .66rem; color: var(--muted);
+  font-variant-numeric: tabular-nums; flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.artwork-collection {
+  font-family: var(--mono); font-size: .62rem; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  margin-top: 4px;
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* MODAL — artwork detail */
+.modal {
+  position: fixed; inset: 0; background: rgba(20, 18, 12, .82);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+  z-index: 100; backdrop-filter: blur(6px);
+}
+.modal.on { display: flex; }
+.modal-inner {
+  background: var(--bg-3); max-width: 1000px; width: 100%;
+  max-height: 90vh; display: grid; grid-template-columns: 1fr 1fr;
+  overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
+}
+@media (max-width: 720px) {
+  .modal-inner { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
+}
+.modal-img {
+  background: var(--bg-2); display: flex; align-items: center;
+  justify-content: center; min-height: 320px;
+  aspect-ratio: 1;
+}
+.modal-img img, .modal-img video { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.modal-body {
+  padding: 36px; overflow-y: auto;
+}
+.modal-collection {
+  font-family: var(--mono); font-size: .68rem;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);
+  margin-bottom: 12px;
+}
+.modal-title {
+  font-family: var(--serif); font-weight: 500;
+  font-size: 1.8rem; letter-spacing: -0.02em; line-height: 1.15;
+  margin-bottom: 16px;
+}
+.modal-id {
+  font-family: var(--mono); font-size: .82rem; color: var(--text-2);
+  margin-bottom: 24px; font-variant-numeric: tabular-nums;
+}
+.modal-desc {
+  font-family: var(--serif); font-size: .96rem; color: var(--text-2);
+  line-height: 1.7; margin-bottom: 24px;
+}
+.modal-attrs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.modal-attr {
+  padding: 6px 10px; border: 1px solid var(--line);
+  font-family: var(--mono); font-size: .68rem; color: var(--text-2);
+}
+.modal-attr b { color: var(--text); margin-right: 6px; font-weight: 600; }
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.modal-btn {
+  padding: 10px 16px; border-radius: var(--r);
+  background: var(--text); color: var(--bg);
+  border: 1px solid var(--text); cursor: pointer;
+  font-family: var(--sans); font-size: .76rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  transition: background .2s var(--ease), color .2s var(--ease);
+}
+.modal-btn.ghost {
+  background: transparent; color: var(--text); border-color: var(--line-2);
+}
+.modal-btn:hover { background: var(--acc-2); border-color: var(--acc-2); color: #fff; }
+.modal-close {
+  position: absolute; top: 28px; right: 28px;
+  width: 36px; height: 36px; background: rgba(20, 18, 12, .15);
+  border: 1px solid rgba(20, 18, 12, .25); color: #fff;
+  font-family: var(--sans); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; line-height: 1;
+  transition: background .2s var(--ease);
+}
+.modal-close:hover { background: rgba(20, 18, 12, .35); }
+
+/* TASTE PROFILE — beneath curator note */
+.taste-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px; margin-top: 40px;
+}
+.taste-card {
+  padding: 24px; background: var(--surface);
+  border: 1px solid var(--line);
+}
+.taste-card .label {
+  font-family: var(--mono); font-size: .68rem;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);
+  margin-bottom: 10px;
+}
+.taste-card .value {
+  font-family: var(--serif); font-weight: 500;
+  font-size: 1.4rem; letter-spacing: -0.01em; line-height: 1.25;
+}
+
+/* ABOUT / HOW IT WORKS */
+.about {
+  padding: 80px 0; border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: minmax(240px, 280px) 1fr;
+  gap: 60px;
+}
+@media (max-width: 720px) { .about { grid-template-columns: 1fr; gap: 24px; } }
+.about-eyebrow {
+  font-family: var(--mono); font-size: .7rem;
+  text-transform: uppercase; letter-spacing: 2px; color: var(--muted);
+}
+.about-content h2 {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem); letter-spacing: -0.02em;
+  line-height: 1.1; margin-bottom: 28px; max-width: 22ch;
+}
+.about-content p {
+  font-family: var(--serif); font-size: 1.08rem; line-height: 1.7;
+  color: var(--text-2); margin-bottom: 18px; max-width: 64ch;
+}
+.about-pipeline {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 28px; margin-top: 40px; padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.pipe-step .num {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 2.4rem; line-height: 1; color: var(--acc-2);
+  margin-bottom: 10px; display: block; letter-spacing: -0.02em;
+}
+.pipe-step .title {
+  font-family: var(--sans); font-weight: 600; font-size: .82rem;
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;
+}
+.pipe-step .desc {
+  font-family: var(--sans); font-size: .82rem; color: var(--text-2);
+  line-height: 1.6;
+}
+
+/* FOOTER */
+.footer {
+  padding: 80px 0 80px; border-top: 1px solid var(--line);
+  margin-top: 80px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 24px; align-items: end; flex-wrap: wrap;
+  background: var(--bg-2);
+}
+@media (max-width: 720px) { .footer { grid-template-columns: 1fr; } }
+.footer-brand {
+  font-family: var(--serif); font-weight: 700; font-size: 1.4rem;
+  letter-spacing: -0.02em;
+}
+.footer-tag {
+  font-family: var(--serif); font-style: italic;
+  color: var(--text-2); margin-top: 8px; font-size: 1.02rem;
+  max-width: 48ch; line-height: 1.55;
+}
+.footer-colophon {
+  margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line);
+  font-family: var(--mono); font-size: .68rem; line-height: 1.8;
+  text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted);
+  max-width: 56ch;
+}
+.footer-links {
+  display: flex; gap: 24px; flex-wrap: wrap; align-items: center;
+  font-family: var(--mono); font-size: .72rem;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.footer-links a {
+  color: var(--text-2); text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color .2s var(--ease), border-color .2s var(--ease);
+}
+.footer-links a:hover { color: var(--acc-2); border-bottom-color: var(--acc-2); }
+
+/* ERROR */
+.err {
+  padding: 24px; background: rgba(139, 28, 28, .06);
+  border: 1px solid rgba(139, 28, 28, .25);
+  font-family: var(--serif); color: var(--crit); font-size: 1rem;
+  display: none; margin-top: 24px;
+}
+.err.on { display: block; }
+
+/* EMPTY STATE */
+.empty {
+  padding: 80px 24px; text-align: center;
+  font-family: var(--serif); font-style: italic; font-size: 1.2rem;
+  color: var(--muted); border: 1px dashed var(--line);
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#" class="brand">
+      <span class="brand-mark">M</span>
+      <span translate="no">MimoVault</span>
+    </a>
+    <div class="nav-actions">
+      <button class="nav-btn" id="langBtn" aria-label="Switch language">EN</button>
+      <button class="nav-btn" id="themeBtn" aria-label="Toggle theme">Dark</button>
+      <a class="nav-btn" href="https://github.com/gyoomei/mimovault" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="hero-eyebrow" id="eyebrow">100T · Powered by Xiaomi MiMo V2.5</div>
+    <h1 id="heroH1">Every NFT a wallet holds, <em>curated</em> like a private museum.</h1>
+    <p class="lead" id="heroLead">Paste any address. MimoVault catalogues every artwork across five chains, writes an exhibition note in your collector's voice, and lets you walk the gallery one frame at a time.</p>
+    <div class="hero-meta">
+      <span><b>5</b> chains</span>
+      <span><b>AI curator</b> per wallet</span>
+      <span><b>Free</b> — no key</span>
+      <span><b>Read-only</b> — never signs</span>
+    </div>
+  </div>
+</header>
+
+<section class="scan-section">
+  <div class="container">
+    <div class="scan-card">
+      <div class="scan-label">Select chains to scan</div>
+      <div class="chain-row" id="chainRow">
+        <button class="chain-pill on" data-chain="eth">Ethereum</button>
+        <button class="chain-pill on" data-chain="base">Base</button>
+        <button class="chain-pill on" data-chain="arb">Arbitrum</button>
+        <button class="chain-pill on" data-chain="poly">Polygon</button>
+        <button class="chain-pill on" data-chain="opt">Optimism</button>
+      </div>
+      <div class="input-row">
+        <input id="addrIn" type="text" placeholder="0x… or vitalik.eth"
+               aria-label="Wallet address or ENS name"
+               autocomplete="off" autocorrect="off" autocapitalize="off"
+               spellcheck="false" inputmode="text">
+        <button class="btn-primary" id="scanBtn">Open the vault</button>
+      </div>
+      <div class="examples">
+        <b>Try:</b>
+        <button class="example-btn" data-addr="vitalik.eth">vitalik.eth</button>
+        <button class="example-btn" data-addr="0x6CC5F688a315f3dC28A7781717a9A798a59fDA7b">punk6529</button>
+        <button class="example-btn" data-addr="0xd387a6e4e84a6c86bd90c158c6028a58cc8ac459">pranksy</button>
+      </div>
+      <div class="err" id="errBox"></div>
+    </div>
+  </div>
+</section>
+
+<section class="loading" id="loadBox" aria-live="polite">
+  <div class="container">
+    <div><span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span></div>
+    <div class="loading-msg" id="loadMsg">Walking the vault…</div>
+  </div>
+</section>
+
+<section class="result" id="resultBox">
+  <div class="container">
+    <div id="exhibitionHeader"></div>
+    <div id="curatorNote"></div>
+    <div id="tasteGrid"></div>
+    <div id="galleryRoot"></div>
+  </div>
+</section>
+
+<section class="about">
+  <div class="container" style="grid-column: 1 / -1; display: grid; grid-template-columns: minmax(240px, 280px) 1fr; gap: 60px;">
+    <div>
+      <div class="about-eyebrow">How it works</div>
+    </div>
+    <div class="about-content">
+      <h2>An autonomous curator, one address at a time.</h2>
+      <p>MimoVault treats each wallet as a private collection. A multi-stage agent pipeline normalizes your input, queries five chains for every token you hold, deduplicates and groups by artist, then commissions Xiaomi MiMo V2.5 to write the exhibition note — in the voice of a museum catalogue, not a marketplace.</p>
+      <p>Free. Read-only. No signature. No key. The gallery never asks your wallet to sign anything.</p>
+      <div class="about-pipeline">
+        <div class="pipe-step">
+          <span class="num">01</span>
+          <div class="title">ENS Resolver</div>
+          <div class="desc">Normalizes any 0x or .eth input through public Cloudflare ENS gateway.</div>
+        </div>
+        <div class="pipe-step">
+          <span class="num">02</span>
+          <div class="title">Multi-chain scan</div>
+          <div class="desc">Ethereum, Base, Arbitrum, Polygon, Optimism — Alchemy NFT v3 in parallel.</div>
+        </div>
+        <div class="pipe-step">
+          <span class="num">03</span>
+          <div class="title">Curator agent</div>
+          <div class="desc">Groups by collection, detects taste pattern, builds the exhibition outline.</div>
+        </div>
+        <div class="pipe-step">
+          <span class="num">04</span>
+          <div class="title">Narrative agent</div>
+          <div class="desc">MiMo V2.5 writes the catalogue note — collector's voice, two paragraphs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container" style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end;">
+    <div>
+      <div class="footer-brand" translate="no">MimoVault</div>
+      <div class="footer-tag">A wallet, exhibited. Catalogue composed in real time by an autonomous curator agent. Free — no key, no signature, no custody.</div>
+      <div class="footer-colophon">
+        Exhibition data: Alchemy NFT API across five EVM chains.<br>
+        Catalogue notes: Xiaomi MiMo V2.5 via Pollinations.<br>
+        Hosted on GitHub Pages. Built with Hermes Agent.
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="https://api.alchemy.com" target="_blank" rel="noopener">Alchemy NFT</a>
+      <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a>
+      <a href="https://huolinger010.github.io/mimoorbit/" target="_blank" rel="noopener">MiMo Orbit 100T</a>
+      <a href="https://github.com/gyoomei/mimovault" target="_blank" rel="noopener">Source</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+  <div class="modal-inner" id="modalInner"></div>
+</div>
+
+<script src="app.js?v=4"></script>
+</body>
+</html>
