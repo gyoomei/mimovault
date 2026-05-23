@@ -66,6 +66,43 @@ const T = {
     detailViewOpensea: 'View on OpenSea',
     detailViewExplorer: 'View on explorer',
     detailMissingDesc: 'No description provided by the artist.',
+    eyebrow: '100T · Powered by Xiaomi MiMo V2.5',
+    h1Em: 'curated',
+    chainNames: { eth: 'Ethereum', base: 'Base', arb: 'Arbitrum', poly: 'Polygon', opt: 'Optimism' },
+    examplesTry: 'Try',
+    aboutEyebrow: 'How it works',
+    aboutH2: 'An autonomous curator, one address at a time.',
+    aboutP1: 'MimoVault treats each wallet as a private collection. A multi-stage agent pipeline normalizes your input, queries five chains for every token you hold, deduplicates and groups by artist, then commissions Xiaomi MiMo V2.5 to write the exhibition note — in the voice of a museum catalogue, not a marketplace.',
+    aboutP2: 'Free. Read-only. No signature. No key. The gallery never asks your wallet to sign anything.',
+    pipe1Title: 'ENS Resolver',
+    pipe1Desc: 'Normalizes any 0x or .eth input through public Cloudflare ENS gateway.',
+    pipe2Title: 'Multi-chain scan',
+    pipe2Desc: 'Ethereum, Base, Arbitrum, Polygon, Optimism — Alchemy NFT v3 in parallel.',
+    pipe3Title: 'Curator agent',
+    pipe3Desc: 'Groups by collection, detects taste pattern, builds the exhibition outline.',
+    pipe4Title: 'Narrative agent',
+    pipe4Desc: "MiMo V2.5 writes the catalogue note — collector's voice, two paragraphs.",
+    footerTag: 'A wallet, exhibited. Catalogue composed in real time by an autonomous curator agent. Free — no key, no signature, no custody.',
+    footerColophon1: 'Exhibition data: Alchemy NFT API across five EVM chains.',
+    footerColophon2: 'Catalogue notes: Xiaomi MiMo V2.5 via Pollinations.',
+    footerColophon3: 'Hosted on GitHub Pages. Built with Hermes Agent.',
+    sourceLink: 'Source',
+    mimoOrbitLink: 'MiMo Orbit 100T',
+    metaChains: 'chains',
+    metaCurator: 'AI curator',
+    metaCuratorPer: 'per wallet',
+    metaFree: 'Free',
+    metaFreeNo: 'no key',
+    metaReadOnly: 'Read-only',
+    metaReadOnlySigns: 'never signs',
+    modalClose: 'Close',
+    langBtnAria: 'Switch language',
+    themeBtnAria: 'Toggle theme',
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    detailViewExplorerSuffix: '',
+    exhibitionTitleTpl: 'A private exhibition of {works} {worksLabel}, drawn from {collections} {collectionsLabel}.',
+    broaderCollection: 'From the broader collection',
   },
   id: {
     h1Pre: 'Setiap NFT yang dimiliki dompet, ',
@@ -107,6 +144,43 @@ const T = {
     detailViewOpensea: 'Lihat di OpenSea',
     detailViewExplorer: 'Lihat di explorer',
     detailMissingDesc: 'Artis tidak memberikan deskripsi.',
+    eyebrow: '100T · Didukung Xiaomi MiMo V2.5',
+    h1Em: 'dikuratori',
+    chainNames: { eth: 'Ethereum', base: 'Base', arb: 'Arbitrum', poly: 'Polygon', opt: 'Optimism' },
+    examplesTry: 'Coba',
+    aboutEyebrow: 'Cara kerjanya',
+    aboutH2: 'Kurator otonom, satu alamat sekali waktu.',
+    aboutP1: 'MimoVault memperlakukan setiap dompet sebagai koleksi pribadi. Sebuah pipeline multi-agen menormalkan masukanmu, mengkueri lima chain untuk setiap token yang kamu pegang, deduplikasi dan mengelompokkan per artis, lalu meminta Xiaomi MiMo V2.5 menulis catatan ekshibisi — dalam suara katalog museum, bukan marketplace.',
+    aboutP2: 'Gratis. Read-only. Tanpa tanda tangan. Tanpa key. Galeri tidak pernah meminta dompetmu menandatangani apa pun.',
+    pipe1Title: 'ENS Resolver',
+    pipe1Desc: 'Menormalkan masukan 0x atau .eth melalui gateway ENS Cloudflare publik.',
+    pipe2Title: 'Pemindai multi-chain',
+    pipe2Desc: 'Ethereum, Base, Arbitrum, Polygon, Optimism — Alchemy NFT v3 paralel.',
+    pipe3Title: 'Agen kurator',
+    pipe3Desc: 'Mengelompokkan per koleksi, mendeteksi pola selera, membangun rangka ekshibisi.',
+    pipe4Title: 'Agen naratif',
+    pipe4Desc: 'MiMo V2.5 menulis catatan katalog — suara kolektor, dua paragraf.',
+    footerTag: 'Sebuah dompet, dipamerkan. Katalog disusun real-time oleh agen kurator otonom. Gratis — tanpa key, tanpa tanda tangan, tanpa kustodi.',
+    footerColophon1: 'Data ekshibisi: Alchemy NFT API di lima chain EVM.',
+    footerColophon2: 'Catatan katalog: Xiaomi MiMo V2.5 via Pollinations.',
+    footerColophon3: 'Di-host di GitHub Pages. Dibangun dengan Hermes Agent.',
+    sourceLink: 'Source',
+    mimoOrbitLink: 'MiMo Orbit 100T',
+    metaChains: 'chain',
+    metaCurator: 'Kurator AI',
+    metaCuratorPer: 'per dompet',
+    metaFree: 'Gratis',
+    metaFreeNo: 'tanpa key',
+    metaReadOnly: 'Read-only',
+    metaReadOnlySigns: 'tidak pernah sign',
+    modalClose: 'Tutup',
+    langBtnAria: 'Ganti bahasa',
+    themeBtnAria: 'Ganti tema',
+    themeLight: 'Terang',
+    themeDark: 'Gelap',
+    detailViewExplorerSuffix: '',
+    exhibitionTitleTpl: 'Ekshibisi pribadi {works} {worksLabel}, diambil dari {collections} {collectionsLabel}.',
+    broaderCollection: 'Dari koleksi yang lebih luas',
   },
 };
 const t = (k) => T[state.lang][k] || k;
@@ -327,7 +401,7 @@ function renderExhibitionHeader(walletLabel, stats) {
   $('exhibitionHeader').innerHTML = `
     <div class="exhibition-header">
       <div class="exhibition-meta">${t('exhibitionEyebrow')} · ${walletLabel}</div>
-      <h2 class="exhibition-title">A private exhibition of ${stats.totalWorks} ${t('works')}, drawn from ${stats.collections} ${t('collections')}.</h2>
+        <h2 class="exhibition-title">${t('exhibitionTitleTpl').replace('{works}', stats.totalWorks).replace('{worksLabel}', t('works')).replace('{collections}', stats.collections).replace('{collectionsLabel}', t('collections'))}</h2>
       <div class="exhibition-stats">
         <div class="stat-block">
           <span class="num">${stats.totalWorks}</span>
@@ -407,7 +481,7 @@ function renderGallery(collections) {
     html += `
       <div class="gallery-section">
         <div class="gallery-section-header">
-          <div class="gallery-section-title"><span class="gallery-roman">${toRoman(featured.length + 1)}</span> ${state.lang === 'id' ? 'Dari koleksi yang lebih luas' : 'From the broader collection'}</div>
+          <div class="gallery-section-title"><span class="gallery-roman">${toRoman(featured.length + 1)}</span> ${t('broaderCollection')}</div>
           <div class="gallery-section-meta">${otherItems.length} ${t('works')}</div>
         </div>
         <div class="gallery">${otherItems.slice(0, 36).map((n, i) => artworkCard(n, i + 1000)).join('')}</div>
@@ -440,7 +514,7 @@ function artworkCard(n, idx) {
           <div class="artwork-title">${escapeHtml(n.title)}</div>
           <div class="artwork-collection">${escapeHtml(n.contractName)}</div>
         </div>
-        <div class="artwork-id">#${escapeHtml(n.tokenIdShort)}</div>
+        ${n.title.includes('#') ? '' : `<div class="artwork-id">#${escapeHtml(n.tokenIdShort)}</div>`}
       </div>
     </article>`;
 }
@@ -524,6 +598,7 @@ async function scan(input) {
     return;
   }
 
+  state.currentLoadKey = 'walking';
   $('loadBox').classList.add('on');
   $('loadMsg').textContent = t('walking');
 
@@ -537,6 +612,7 @@ async function scan(input) {
     state.walletAddr = resolved.address;
     state.walletEns  = resolved.ens;
 
+    state.currentLoadKey = 'fetching';
     $('loadMsg').textContent = t('fetching');
     const fetches = state.selectedChains.map(c => fetchNftsForChain(c, resolved.address));
     const results = await Promise.all(fetches);
@@ -557,11 +633,14 @@ async function scan(input) {
       state.flatIndex[n.contractAddr + ':' + n.tokenId + ':' + n.chain] = i;
     });
 
+    state.currentLoadKey = 'composing';
     $('loadMsg').textContent = t('composing');
     const walletLabel = resolved.ens || resolved.address.slice(0, 6) + '…' + resolved.address.slice(-4);
 
     const narrative = await composeNarrative(state.curated.taste, state.curated.stats, walletLabel);
+    state.lastNarrative = narrative;
 
+    state.currentLoadKey = 'rendering';
     $('loadMsg').textContent = t('rendering');
     await new Promise(r => setTimeout(r, 100));
 
@@ -584,26 +663,99 @@ async function scan(input) {
 // INIT
 // ═══════════════════════════════════════════════════════════════
 function applyLang() {
-  $('addrIn').placeholder = t('placeholder');
-  $('scanBtn').textContent = t('scan');
-  qs('.scan-label').textContent = t('scanLabel');
-  qs('.examples b').textContent = t('try');
+  document.documentElement.lang = state.lang;
+  // Nav
   $('langBtn').textContent = state.lang === 'en' ? 'EN' : 'ID';
+  $('langBtn').setAttribute('aria-label', t('langBtnAria'));
+  $('themeBtn').setAttribute('aria-label', t('themeBtnAria'));
   // Hero
+  $('eyebrow').textContent = t('eyebrow');
   $('heroH1').innerHTML = `${t('h1Pre')}<em>${t('h1Em')}</em>${t('h1Post')}`;
   $('heroLead').textContent = t('lead');
   // Hero meta
-  const meta = qs('.hero-meta');
-  meta.innerHTML = `
-    <span><b>5</b> ${t('chainsLabel')}</span>
-    <span><b>${state.lang === 'id' ? 'Kurator AI' : 'AI curator'}</b> ${state.lang === 'id' ? 'per dompet' : 'per wallet'}</span>
-    <span><b>${state.lang === 'id' ? 'Gratis' : 'Free'}</b> · ${state.lang === 'id' ? 'tanpa key' : 'no key'}</span>
-    <span><b>Read-only</b> · ${state.lang === 'id' ? 'tidak pernah sign' : 'never signs'}</span>`;
+  const cn = T[state.lang].chainNames;
+  $('heroMeta').innerHTML = `
+    <span><b>5</b> ${t('metaChains')}</span>
+    <span><b>${t('metaCurator')}</b> ${t('metaCuratorPer')}</span>
+    <span><b>${t('metaFree')}</b> · ${t('metaFreeNo')}</span>
+    <span><b>${t('metaReadOnly')}</b> · ${t('metaReadOnlySigns')}</span>`;
+  // Scan card
+  $('scanLabel').textContent = t('scanLabel');
+  $('addrIn').placeholder = t('placeholder');
+  $('scanBtn').textContent = t('scan');
+  // Chain pills (preserve selected state)
+  const chainKeys = ['eth','base','arb','poly','opt'];
+  $('chainRow').innerHTML = chainKeys.map(k => {
+    const on = state.selectedChains.includes(k) ? ' on' : '';
+    return `<button class="chain-pill${on}" data-chain="${k}">${cn[k]}</button>`;
+  }).join('');
+  // Re-bind chain pills
+  qsa('.chain-pill').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('on');
+      const c = el.dataset.chain;
+      if (el.classList.contains('on')) {
+        if (!state.selectedChains.includes(c)) state.selectedChains.push(c);
+      } else {
+        state.selectedChains = state.selectedChains.filter(x => x !== c);
+      }
+    });
+  });
+  // Examples
+  $('examplesRow').innerHTML = `
+    <b>${t('examplesTry')}:</b>
+    <button class="example-btn" data-addr="vitalik.eth">vitalik.eth</button>
+    <button class="example-btn" data-addr="0x6CC5F688a315f3dC28A7781717a9A798a59fDA7b">punk6529</button>
+    <button class="example-btn" data-addr="0xd387a6e4e84a6c86bd90c158c6028a58cc8ac459">pranksy</button>`;
+  qsa('.example-btn').forEach(el => {
+    el.addEventListener('click', () => {
+      $('addrIn').value = el.dataset.addr;
+      scan(el.dataset.addr);
+    });
+  });
+  // Loading message — keep current if already showing
+  if ($('loadBox').classList.contains('on')) {
+    // If a key is mid-flow, refresh from current loadKey state
+    if (state.currentLoadKey) {
+      $('loadMsg').textContent = t(state.currentLoadKey);
+    }
+  } else {
+    $('loadMsg').textContent = t('walking');
+  }
+  // About section
+  $('aboutEyebrow').textContent = t('aboutEyebrow');
+  $('aboutH2').textContent = t('aboutH2');
+  $('aboutP1').textContent = t('aboutP1');
+  $('aboutP2').textContent = t('aboutP2');
+  $('aboutPipeline').innerHTML = [1,2,3,4].map(n => `
+    <div class="pipe-step">
+      <span class="num">0${n}</span>
+      <div class="title">${escapeHtml(t('pipe' + n + 'Title'))}</div>
+      <div class="desc">${escapeHtml(t('pipe' + n + 'Desc'))}</div>
+    </div>`).join('');
+  // Footer
+  $('footerTag').textContent = t('footerTag');
+  $('footerColophon').innerHTML = `${t('footerColophon1')}<br>${t('footerColophon2')}<br>${t('footerColophon3')}`;
+  $('footerLinks').innerHTML = `
+    <a href="https://api.alchemy.com" target="_blank" rel="noopener">Alchemy NFT</a>
+    <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a>
+    <a href="https://huolinger010.github.io/mimoorbit/" target="_blank" rel="noopener">${t('mimoOrbitLink')}</a>
+    <a href="https://github.com/gyoomei/mimovault" target="_blank" rel="noopener">${t('sourceLink')}</a>`;
+  // Modal close aria
+  $('modalClose').setAttribute('aria-label', t('modalClose'));
+  // Re-render result section if currently showing (to update curator note byline, taste labels, exhibition labels, etc.)
+  if (state.curated && $('resultBox').classList.contains('on')) {
+    const walletLabel = state.walletEns || (state.walletAddr ? state.walletAddr.slice(0,6) + '…' + state.walletAddr.slice(-4) : '');
+    renderExhibitionHeader(walletLabel, state.curated.stats);
+    renderTasteGrid(state.curated.taste);
+    renderGallery(state.curated.collections);
+    if (state.lastNarrative) renderCuratorNote(state.lastNarrative);
+  }
 }
 
 function applyTheme() {
   document.documentElement.dataset.theme = state.theme;
-  $('themeBtn').textContent = state.theme === 'dark' ? 'Light' : 'Dark';
+  $('themeBtn').textContent = state.theme === 'dark' ? t('themeLight') : t('themeDark');
 }
 
 function init() {
@@ -617,26 +769,7 @@ function init() {
   applyLang();
   applyTheme();
 
-  // Chain pills
-  qsa('.chain-pill').forEach(el => {
-    el.addEventListener('click', () => {
-      el.classList.toggle('on');
-      const c = el.dataset.chain;
-      if (el.classList.contains('on')) {
-        if (!state.selectedChains.includes(c)) state.selectedChains.push(c);
-      } else {
-        state.selectedChains = state.selectedChains.filter(x => x !== c);
-      }
-    });
-  });
-
-  // Examples
-  qsa('.example-btn').forEach(el => {
-    el.addEventListener('click', () => {
-      $('addrIn').value = el.dataset.addr;
-      scan(el.dataset.addr);
-    });
-  });
+  // (chain pills + examples bound inside applyLang)
 
   // Scan
   $('scanBtn').addEventListener('click', () => scan($('addrIn').value));

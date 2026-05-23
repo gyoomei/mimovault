@@ -243,7 +243,9 @@ body {
   margin-bottom: 20px;
 }
 .exhibition-stats {
-  display: flex; gap: clamp(20px, 4vw, 56px); flex-wrap: wrap; padding-top: clamp(16px, 2.5vw, 20px);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));
+  gap: clamp(16px, 3vw, 36px) clamp(20px, 4vw, 56px);
+  padding-top: clamp(16px, 2.5vw, 20px);
   border-top: 1px solid var(--line);
 }
 .stat-block { }
@@ -468,11 +470,11 @@ body {
 
 /* TASTE PROFILE — beneath curator note */
 .taste-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px; margin-top: 40px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: clamp(12px, 2vw, 24px); margin-top: clamp(28px, 5vw, 40px);
 }
 .taste-card {
-  padding: 24px; background: var(--surface);
+  padding: clamp(18px, 3vw, 24px); background: var(--surface);
   border: 1px solid var(--line);
 }
 .taste-card .label {
@@ -482,11 +484,10 @@ body {
 }
 .taste-card .value {
   font-family: var(--serif); font-weight: 500;
-  font-size: 1.4rem; letter-spacing: -0.01em; line-height: 1.25;
+  font-size: clamp(1.1rem, 2vw, 1.4rem); letter-spacing: -0.01em; line-height: 1.3;
 }
 
 /* ABOUT / HOW IT WORKS */
-.about {
 .about {
   display: grid; grid-template-columns: minmax(0, 280px) 1fr;
   gap: clamp(24px, 4vw, 60px); align-items: start;
@@ -502,12 +503,13 @@ body {
   line-height: 1.1; margin-bottom: clamp(20px, 3vw, 28px); max-width: 22ch;
 }
 .about-content p {
-  font-family: var(--serif); font-size: 1.08rem; line-height: 1.7;
+  font-family: var(--serif); font-size: clamp(1rem, 1.5vw, 1.08rem); line-height: 1.7;
   color: var(--text-2); margin-bottom: 18px; max-width: 64ch;
 }
 .about-pipeline {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
-  gap: 28px; margin-top: 40px; padding-top: 40px;
+  gap: clamp(20px, 3vw, 28px); margin-top: clamp(28px, 5vw, 40px);
+  padding-top: clamp(28px, 5vw, 40px);
   border-top: 1px solid var(--line);
 }
 .pipe-step .num {
@@ -604,26 +606,15 @@ body {
     <div class="hero-eyebrow" id="eyebrow">100T · Powered by Xiaomi MiMo V2.5</div>
     <h1 id="heroH1">Every NFT a wallet holds, <em>curated</em> like a private museum.</h1>
     <p class="lead" id="heroLead">Paste any address. MimoVault catalogues every artwork across five chains, writes an exhibition note in your collector's voice, and lets you walk the gallery one frame at a time.</p>
-    <div class="hero-meta">
-      <span><b>5</b> chains</span>
-      <span><b>AI curator</b> per wallet</span>
-      <span><b>Free</b> — no key</span>
-      <span><b>Read-only</b> — never signs</span>
-    </div>
+    <div class="hero-meta" id="heroMeta"></div>
   </div>
 </header>
 
 <section class="scan-section">
   <div class="container">
     <div class="scan-card">
-      <div class="scan-label">Select chains to scan</div>
-      <div class="chain-row" id="chainRow">
-        <button class="chain-pill on" data-chain="eth">Ethereum</button>
-        <button class="chain-pill on" data-chain="base">Base</button>
-        <button class="chain-pill on" data-chain="arb">Arbitrum</button>
-        <button class="chain-pill on" data-chain="poly">Polygon</button>
-        <button class="chain-pill on" data-chain="opt">Optimism</button>
-      </div>
+      <div class="scan-label" id="scanLabel"></div>
+      <div class="chain-row" id="chainRow"></div>
       <div class="input-row">
         <input id="addrIn" type="text" placeholder="0x… or vitalik.eth"
                aria-label="Wallet address or ENS name"
@@ -631,12 +622,7 @@ body {
                spellcheck="false" inputmode="text">
         <button class="btn-primary" id="scanBtn">Open the vault</button>
       </div>
-      <div class="examples">
-        <b>Try:</b>
-        <button class="example-btn" data-addr="vitalik.eth">vitalik.eth</button>
-        <button class="example-btn" data-addr="0x6CC5F688a315f3dC28A7781717a9A798a59fDA7b">punk6529</button>
-        <button class="example-btn" data-addr="0xd387a6e4e84a6c86bd90c158c6028a58cc8ac459">pranksy</button>
-      </div>
+      <div class="examples" id="examplesRow"></div>
       <div class="err" id="errBox"></div>
     </div>
   </div>
@@ -645,7 +631,7 @@ body {
 <section class="loading" id="loadBox" aria-live="polite">
   <div class="container">
     <div><span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span></div>
-    <div class="loading-msg" id="loadMsg">Walking the vault…</div>
+    <div class="loading-msg" id="loadMsg"></div>
   </div>
 </section>
 
@@ -661,34 +647,13 @@ body {
 <section class="about">
   <div class="container about">
     <div>
-      <div class="about-eyebrow">How it works</div>
+      <div class="about-eyebrow" id="aboutEyebrow"></div>
     </div>
     <div class="about-content">
-      <h2>An autonomous curator, one address at a time.</h2>
-      <p>MimoVault treats each wallet as a private collection. A multi-stage agent pipeline normalizes your input, queries five chains for every token you hold, deduplicates and groups by artist, then commissions Xiaomi MiMo V2.5 to write the exhibition note — in the voice of a museum catalogue, not a marketplace.</p>
-      <p>Free. Read-only. No signature. No key. The gallery never asks your wallet to sign anything.</p>
-      <div class="about-pipeline">
-        <div class="pipe-step">
-          <span class="num">01</span>
-          <div class="title">ENS Resolver</div>
-          <div class="desc">Normalizes any 0x or .eth input through public Cloudflare ENS gateway.</div>
-        </div>
-        <div class="pipe-step">
-          <span class="num">02</span>
-          <div class="title">Multi-chain scan</div>
-          <div class="desc">Ethereum, Base, Arbitrum, Polygon, Optimism — Alchemy NFT v3 in parallel.</div>
-        </div>
-        <div class="pipe-step">
-          <span class="num">03</span>
-          <div class="title">Curator agent</div>
-          <div class="desc">Groups by collection, detects taste pattern, builds the exhibition outline.</div>
-        </div>
-        <div class="pipe-step">
-          <span class="num">04</span>
-          <div class="title">Narrative agent</div>
-          <div class="desc">MiMo V2.5 writes the catalogue note — collector's voice, two paragraphs.</div>
-        </div>
-      </div>
+      <h2 id="aboutH2"></h2>
+      <p id="aboutP1"></p>
+      <p id="aboutP2"></p>
+      <div class="about-pipeline" id="aboutPipeline"></div>
     </div>
   </div>
 </section>
@@ -697,27 +662,18 @@ body {
   <div class="container footer-inner">
     <div>
       <div class="footer-brand" translate="no">MimoVault</div>
-      <div class="footer-tag">A wallet, exhibited. Catalogue composed in real time by an autonomous curator agent. Free — no key, no signature, no custody.</div>
-      <div class="footer-colophon">
-        Exhibition data: Alchemy NFT API across five EVM chains.<br>
-        Catalogue notes: Xiaomi MiMo V2.5 via Pollinations.<br>
-        Hosted on GitHub Pages. Built with Hermes Agent.
-      </div>
+      <div class="footer-tag" id="footerTag"></div>
+      <div class="footer-colophon" id="footerColophon"></div>
     </div>
-    <div class="footer-links">
-      <a href="https://api.alchemy.com" target="_blank" rel="noopener">Alchemy NFT</a>
-      <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a>
-      <a href="https://huolinger010.github.io/mimoorbit/" target="_blank" rel="noopener">MiMo Orbit 100T</a>
-      <a href="https://github.com/gyoomei/mimovault" target="_blank" rel="noopener">Source</a>
-    </div>
+    <div class="footer-links" id="footerLinks"></div>
   </div>
 </footer>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+  <button class="modal-close" id="modalClose" aria-label="Close" data-i18n-aria="modalClose">✕</button>
   <div class="modal-inner" id="modalInner"></div>
 </div>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>
