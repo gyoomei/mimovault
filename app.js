@@ -436,7 +436,7 @@ function artworkCard(n, idx) {
         <span class="artwork-chain">${chainLabel}</span>
       </div>
       <div class="artwork-meta">
-        <div>
+        <div class="artwork-title-wrap">
           <div class="artwork-title">${escapeHtml(n.title)}</div>
           <div class="artwork-collection">${escapeHtml(n.contractName)}</div>
         </div>
